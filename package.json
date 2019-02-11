@@ -1,0 +1,17 @@
+
+{
+  "name": "react-native-amazon-iap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "",
+  "license": "",
+  "peerDependencies": {
+    "react-native": "^0.57.4"
+  }
+}
