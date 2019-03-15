@@ -3,6 +3,7 @@ package com.dubit.amazoniap;
 
 import com.amazon.device.iap.model.RequestId;
 import com.amazon.device.iap.PurchasingService;
+import com.amazon.device.iap.model.FulfillmentResult;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -41,19 +42,19 @@ public class RNAmazonIapModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void getUserData(Promise promise) {
+  public void getUserData(final Promise promise) {
     final RequestId requestId = PurchasingService.getUserData();
     this.purchasingListener.addPromiseForRequest(requestId, promise);
   }
 
   @ReactMethod
-  public void getPurchaseUpdates(boolean reset, Promise promise) {
+  public void getPurchaseUpdates(boolean reset, final Promise promise) {
     final RequestId requestId = PurchasingService.getPurchaseUpdates(reset);
     this.purchasingListener.addPromiseForRequest(requestId, promise);
   }
 
   @ReactMethod
-  public void getProductData(ReadableArray SKUs, Promise promise) {
+  public void getProductData(ReadableArray SKUs, final Promise promise) {
     final Set<String> SKUSet = new HashSet<>();
     for (int i = 0; i < SKUs.size(); i++) {
       SKUSet.add(SKUs.getString(i));
@@ -66,6 +67,11 @@ public class RNAmazonIapModule extends ReactContextBaseJavaModule {
   public void purchase(String sku, Promise promise) {
     final RequestId requestId = PurchasingService.purchase(sku);
     this.purchasingListener.addPromiseForRequest(requestId, promise);
+  }
+
+  @ReactMethod
+  public void notifyFulfillment(String recieptID, Promise promise) {
+    PurchasingService.notifyFulfillment(recieptID, FulfillmentResult.FULFILLED);
   }
 
   // TODO: (Stefan) Implement fulfillment notification from the upper layer of the API.
