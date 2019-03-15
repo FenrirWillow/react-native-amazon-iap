@@ -33,7 +33,7 @@ public class RNAmazonIapPurchasingListener implements PurchasingListener {
             Log.e(RNAmazonIapPackage.LOGGER_TAG, String.format("No promise for response: %s", requestId));
         } else {
             try {
-                promise.resolve(userDataResponse.toJSON());
+                promise.resolve(userDataResponse.toJSON().toString());
             } catch (JSONException exception) {
                 promise.reject(exception);
             }
@@ -49,7 +49,7 @@ public class RNAmazonIapPurchasingListener implements PurchasingListener {
             Log.e(RNAmazonIapPackage.LOGGER_TAG, String.format("No promise for response: %s", requestId));
         } else {
             try {
-                promise.resolve(productDataResponse.toJSON());
+                promise.resolve(productDataResponse.toJSON().toString());
             } catch (JSONException exception) {
                 promise.reject(exception);
             }
@@ -64,11 +64,7 @@ public class RNAmazonIapPurchasingListener implements PurchasingListener {
         if (promise == null) {
             Log.e(RNAmazonIapPackage.LOGGER_TAG, String.format("No promise for response: %s", requestId));
         } else {
-            try {
-                promise.resolve(purchaseResponse.toJSON());
-            } catch (JSONException exception) {
-                promise.reject(exception);
-            }
+           promise.resolve(purchaseResponse.getReceipt().toJSON().toString());
         }
     }
 
@@ -81,7 +77,7 @@ public class RNAmazonIapPurchasingListener implements PurchasingListener {
             Log.e(RNAmazonIapPackage.LOGGER_TAG, String.format("No promise for response: %s", requestId));
         } else {
             try {
-                promise.resolve(purchaseUpdatesResponse.toJSON());
+                promise.resolve(purchaseUpdatesResponse.toJSON().toString());
             } catch (JSONException exception) {
                 promise.reject(exception);
             }
