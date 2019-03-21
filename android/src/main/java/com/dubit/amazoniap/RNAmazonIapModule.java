@@ -1,25 +1,31 @@
 
 package com.dubit.amazoniap;
 
+import com.amazon.device.iap.model.RequestId;
+import com.amazon.device.iap.PurchasingService;
+import com.amazon.device.iap.model.FulfillmentResult;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.ReadableArray;
 
-import com.amazon.iap.PurchasingService;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class RNAmazonIapModule extends ReactContextBaseJavaModule {
 
-  private static final IS_SANDBOX_MODE = "IS_SANDBOX_MODE";
-  private static final SDK_VERSION = "SDK_VERSION";
+  private static final String IS_SANDBOX_MODE = "IS_SANDBOX_MODE";
+  private static final String SDK_VERSION = "SDK_VERSION";
 
-  private final ReactApplicationContext reactContext;
-  private final PurchasingService purchasingService;
+  private final RNAmazonIapPurchasingListener purchasingListener;
 
-  public RNAmazonIapModule(ReactApplicationContext reactContext) {
+  RNAmazonIapModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.reactContext = reactContext;
-    this.purchasingService = new PurchasingService();
+    this.purchasingListener = new RNAmazonIapPurchasingListener();
+    PurchasingService.registerListener(reactContext, this.purchasingListener);
   }
 
   @Override
@@ -35,4 +41,38 @@ public class RNAmazonIapModule extends ReactContextBaseJavaModule {
     return constants;
   }
 
+  @ReactMethod
+  public void getUserData(final Promise promise) {
+    final RequestId requestId = PurchasingService.getUserData();
+    this.purchasingListener.addPromiseForRequest(requestId, promise);
+  }
+
+  @ReactMethod
+  public void getPurchaseUpdates(boolean reset, final Promise promise) {
+    final RequestId requestId = PurchasingService.getPurchaseUpdates(reset);
+    this.purchasingListener.addPromiseForRequest(requestId, promise);
+  }
+
+  @ReactMethod
+  public void getProductData(ReadableArray SKUs, final Promise promise) {
+    final Set<String> SKUSet = new HashSet<>();
+    for (int i = 0; i < SKUs.size(); i++) {
+      SKUSet.add(SKUs.getString(i));
+    }
+    final RequestId requestId = PurchasingService.getProductData(SKUSet);
+    this.purchasingListener.addPromiseForRequest(requestId, promise);
+  }
+
+  @ReactMethod
+  public void purchase(String sku, Promise promise) {
+    final RequestId requestId = PurchasingService.purchase(sku);
+    this.purchasingListener.addPromiseForRequest(requestId, promise);
+  }
+
+  @ReactMethod
+  public void notifyFulfillment(String recieptID, Promise promise) {
+    PurchasingService.notifyFulfillment(recieptID, FulfillmentResult.FULFILLED);
+  }
+
+  // TODO: (Stefan) Implement fulfillment notification from the upper layer of the API.
 }
