@@ -64,7 +64,11 @@ public class RNAmazonIapPurchasingListener implements PurchasingListener {
         if (promise == null) {
             Log.e(RNAmazonIapPackage.LOGGER_TAG, String.format("No promise for response: %s", requestId));
         } else {
-           promise.resolve(purchaseResponse.getReceipt().toJSON().toString());
+            try {
+                promise.resolve(purchaseResponse.getReceipt().toJSON().toString());
+            } catch (Exception exception) {
+                promise.reject(exception);
+            }
         }
     }
 
